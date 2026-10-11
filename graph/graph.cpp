@@ -1,4 +1,7 @@
+#include "Stack/Stack.h"
+#include "Queue/Queue.h"
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class Graph
@@ -51,12 +54,86 @@ public:
         }
     }
 
+    void DFS(int root)
+    {
+        if (root >= size)
+        {
+            cout << "Invalid root" << endl;
+            return;
+        }
+
+        Stack st(100);
+        bool visited[size] = {false};
+
+        st.push(root);
+
+        while (!st.isEmpty())
+        {
+            int val = st.pop();
+
+            if (!visited[val])
+                cout << val << " -> ";
+
+            visited[val] = true;
+
+            for (int i = 0; i < size; i++)
+            {
+                if (matrix[val][i] && !visited[i])
+                    st.push(i);
+            }
+
+            if (st.isEmpty())
+                cout << "X" << endl;
+        }
+    }
+
+    void DFSRecursive(vector<bool> &visited, vector<int> &res, int src)
+    {
+        visited[src] = true;
+        res.push_back(src);
+
+        for (int i = 0; i < size; i++)
+        {
+            if (matrix[src][i] && !visited[i])
+                DFSRecursive(visited, res, i);
+        }
+    }
+
+    void BFS(int root)
+    {
+        vector<bool> visited(size, false);
+        Queue q(size);
+
+        visited[root] = true;
+        q.push(root);
+
+        while (!q.isEmpty())
+        {
+            int val = q.pop();
+
+            cout << val << " -> ";
+
+            for (int i = 0; i < size; i++)
+            {
+                if (!visited[i] && matrix[val][i])
+                {
+                    q.push(i);
+                    visited[i] = true;
+                }
+            }
+
+            if (q.isEmpty())
+                cout << "X";
+        }
+    }
+
     ~Graph()
     {
-        cout << endl << "Graph destruction" << endl;
+        cout << endl
+             << "Graph destruction" << endl;
         for (int i = 0; i < size; ++i)
         {
-            delete[] matrix[i]; 
+            delete[] matrix[i];
         }
         delete[] matrix;
     }
@@ -73,4 +150,9 @@ int main()
     g.addEdge(0, 2, 67);
 
     g.printMatrix();
+
+    cout << endl;
+
+    g.DFS(0);
+    g.BFS(0);
 }
